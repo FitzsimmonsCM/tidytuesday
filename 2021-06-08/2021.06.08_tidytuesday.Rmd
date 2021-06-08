@@ -1,0 +1,58 @@
+---
+title: "Tidy Tuesday Week 24: Great Lakes Fishery Commission"
+output: html_notebook
+author: Christina Fitzsimmons
+date: 2021-06-08
+---
+
+# Introduction
+This data explores the commercial fish catch data published by the Great Lakes Fishery Commission. 
+
+```{r}
+library(tidytuesdayR)
+library(tidyverse)
+library(ggpubr)
+```
+
+# Read in the data
+```{r}
+tuesdata <- tidytuesdayR::tt_load('2021-06-08')
+fishing <- tuesdata$fishing
+
+# Or read in the data manually
+fishing_man <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-06-08/fishing.csv')
+stocked_man <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-06-08/stocked.csv')
+
+```
+# Filtering the data
+```{r}
+# subset data to look only at 2015
+
+small_pond <- fishing_man %>%
+  dplyr::select(year, lake, species, grand_total) %>%
+  dplyr::filter(year == 2015) %>%
+  dplyr::distinct()
+
+# Group the data by lake and select the top 5 fish
+small_pond_group <- small_pond %>%
+  mutate(species = factor(species)) 
+# slice_max allows you to take the top n things out of your data. Can be modified to take percents as well as whole numbers. 
+```
+# Make Barplot
+
+```{r}
+top_fish <- ggplot(small_pond_group, aes(x = species, y=grand_total, fill= lake)) +
+  geom_bar(stat = 'identity') +
+  theme_bw() +
+  rotate_x_text(angle = 90) +
+  labs(title = 'Number of Fish Caught in the Great Lakes in 2015', 
+       y = 'Total number of fish caught', 
+       x = 'Fish species')
+  
+top_fish
+
+```
+
+
+
+
